@@ -1,0 +1,30 @@
+def main():
+    st.title('Song Recommender')
+    
+    # Add input sliders for tempo, pitch, energy, danceability
+    tempo = st.sidebar.slider('Tempo', min_value=0.0, max_value=1.0, step=0.01)
+    pitch = st.sidebar.slider('Pitch', min_value=0.0, max_value=1.0, step=0.01)
+    energy = st.sidebar.slider('Energy', min_value=0.0, max_value=1.0, step=0.01)
+    danceability = st.sidebar.slider('Danceability', min_value=0.0, max_value=1.0, step=0.01)
+
+    # Add dropdown for music genre
+    music_genre = st.sidebar.selectbox('Music Genre', ['Rock', 'Pop', 'Hip Hop'])
+
+    # Filter the song data based on input variables
+    filtered_data = song_data[(song_data['music_genre'] == music_genre) &
+                              (song_data['tempo'] >= tempo) &
+                              (song_data['pitch'] >= pitch) &
+                              (song_data['energy'] >= energy) &
+                              (song_data['danceability'] >= danceability)]
+
+    if len(filtered_data) == 0:
+        st.warning('No songs found for the given criteria.')
+    else:
+        # Use the Nearest Neighbors model to get recommendations
+        query = filtered_data[features].values.reshape(1, -1)
+        _, indices = nn_model.kneighbors(query)
+
+        # Display the recommended songs
+        st.subheader('Recommended Songs')
+        for index in indices[0]:
+            st.write(song_data.loc[index, 'song_title'])
